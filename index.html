@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset=utf-8 />
+<title>GDELT Dashboard</title>
+<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+<script src='https://api.tiles.mapbox.com/mapbox.js/v2.0.1/mapbox.js'></script>
+<script src='jquery-1.10.2.min.js'></script>
+<script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.2.0/leaflet-omnivore.min.js'></script>
+
+<link href='https://api.tiles.mapbox.com/mapbox.js/v2.0.1/mapbox.css' rel='stylesheet' />
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+
+<div id='map'></div>
+
+<div class="pin-bottom" style="bottom: 20px">
+    <div class="col12 fill-light center strongline-top strongline-bottom clearfix">
+        <div class="arrow-container strongline-right">
+            <div class="arrow animate"></div>
+        </div>
+        <div class="pad1y">
+            <h1 class="caps">Syria Conflict Mapping <span class="small quiet">[beta]</span></h1>
+        </div>
+    </div>
+    <div class="content-container col12 animate fill-darken3 dark text-shadow">
+        <div class="clearfix" style="margin-left: 80px">
+            <div class="row6 col7 pad2y pad1x strongline-right scroll-styled">
+                <p class="prose">Explore spatial trends in the Syrian Civil War from 1 October, 2013 to 31 December, 2013.  In order to compare dataset resolution, data points are binned by grid cell and week.</p>
+
+                <p class="prose">Data is from the Global Database of Events, Language, and Tone (GDELT), a global catalog of human behavior events that attempts to track relationships and context between groups of people or “actors.” GDELT works by scraping numerous worldwide news sources on a daily basis as well as historical news archives from 1979 to present. It assigns a variety of attributes to news stories such as actor role, actor type, city/landmark, ethnic/religious affiliation, number of articles referencing an event, etc. in an attempt to uncover trends of events and relationships of the players involved.</p>
+
+                <p class="prose">GDELT is still a new dataset.  As such, it's inherent biases are still largely unknown; this exploratory project is intended in part as an initial examination of the dataset's utiltiy.</p>
+
+                <p class="quiet">Find the python code on <a href="https://github.com/jameslaneconkling/pydelt">github</a>.  For questions/comments on the data analysis and cartography, contact James Conkling: <em>james.lane.conkling@gmail.com</em></p>
+            </div>
+            <div class="row6 col5 scroll-styled">
+                <div class='calendar-switcher pill row2 col12 pad1 center caps clearfix'><!--
+                  --><a href='#' data-index='1' data-nav='["34.5", "37.5", "8"]' class='button col6 quiet short active'>Syria</a><!--
+                  --><a href='#' data-index='2' data-nav='["36.1", "37.2", "11"]' class='button col6 quiet short'>Aleppo</a>
+                </div>
+                <div class="row8 clip sliding h active1">
+                    <ul class="calendar col12 pad1 center animate clearfix caps small">
+                        <li class="col12 keyline-bottom"><a class="col12 pad0y quiet keyline-left" href="#" data-id="total">Total</a></li>
+                        <li class="col3 keyline-bottom"><a class="col12 pad0 quiet keyline-left" href="#" data-id="d13_10_01">Oct 01 - Oct 06</a></li>
+                        <li class="col3 keyline-bottom"><a class="col12 pad0 quiet keyline-left" href="#" data-id="d13_10_08">Oct 07 - Oct 13</a></li>
+                        <li class="col3 keyline-bottom"><a class="col12 pad0 quiet keyline-left" href="#" data-id="d13_10_15">Oct 14 - Oct 20</a></li>
+                        <li class="col3 keyline-bottom"><a class="col12 pad0 quiet keyline-left" href="#" data-id="d13_10_22">Oct 21 - Oct 27</a></li>
+                        <li class="col3 keyline-bottom"><a class="col12 pad0 quiet keyline-left" href="#" data-id="d13_10_29">Oct 28 - Nov 03</a></li>
+                        <li class="col3 keyline-bottom"><a class="col12 pad0 quiet keyline-left" href="#" data-id="d13_11_05">Nov 04 - Nov 11</a></li>
+                        <li class="col3 keyline-bottom"><a class="col12 pad0 quiet keyline-left" href="#" data-id="d13_11_12">Nov 11 - Nov 17</a></li>
+                        <li class="col3 keyline-bottom"><a class="col12 pad0 quiet keyline-left" href="#" data-id="d13_11_19">Nov 18 - Nov 24</a></li>
+                        <li class="col3 keyline-bottom"><a class="col12 pad0 quiet keyline-left" href="#" data-id="d13_11_26">Nov 25 - Dec 01</a></li>
+                        <li class="col3 keyline-bottom"><a class="col12 pad0 quiet keyline-left" href="#" data-id="d13_12_03">Dec 02 - Dec 08</a></li>
+                        <li class="col3 keyline-bottom"><a class="col12 pad0 quiet keyline-left" href="#" data-id="d13_12_10">Dec 09 - Dec 15</a></li>
+                        <li class="col3 keyline-bottom"><a class="col12 pad0 quiet keyline-left" href="#" data-id="d13_12_17">Dec 16 - Dec 22</a></li>
+                        <li class="col3 keyline-bottom"><a class="col12 pad0 quiet keyline-left" href="#" data-id="d13_12_24">Dec 23 - Dec 29</a></li>
+                        <li class="col3 keyline-bottom"><a class="col12 pad0 quiet keyline-left" href="#" data-id="d13_12_31">Dec 30 - Dec 31</a></li>
+                    </ul>
+                    <ul class="calendar col12 pad1 center animate clearfix caps small">
+                        <li class="col12 keyline-bottom"><a class="col12 pad0y quiet keyline-left" href="#" data-id="total">Total</a></li>
+                        <li class="col3 keyline-bottom"><a class="col12 pad0 quiet keyline-left" href="#" data-id="d13_10_01">Oct 01 - Oct 06</a></li>
+                        <li class="col3 keyline-bottom"><a class="col12 pad0 quiet keyline-left" href="#" data-id="d13_10_08">Oct 07 - Oct 13</a></li>
+                        <li class="col3 keyline-bottom"><a class="col12 pad0 quiet keyline-left" href="#" data-id="d13_10_15">Oct 14 - Oct 20</a></li>
+                        <li class="col3 keyline-bottom"><a class="col12 pad0 quiet keyline-left" href="#" data-id="d13_10_22">Oct 21 - Oct 27</a></li>
+                        <li class="col3 keyline-bottom"><a class="col12 pad0 quiet keyline-left" href="#" data-id="d13_10_29">Oct 28 - Nov 03</a></li>
+                        <li class="col3 keyline-bottom"><a class="col12 pad0 quiet keyline-left" href="#" data-id="d13_11_05">Nov 04 - Nov 11</a></li>
+                        <li class="col3 keyline-bottom"><a class="col12 pad0 quiet keyline-left" href="#" data-id="d13_11_12">Nov 11 - Nov 17</a></li>
+                        <li class="col3 keyline-bottom"><a class="col12 pad0 quiet keyline-left" href="#" data-id="d13_11_19">Nov 18 - Nov 24</a></li>
+                        <li class="col3 keyline-bottom"><a class="col12 pad0 quiet keyline-left" href="#" data-id="d13_11_26">Nov 25 - Dec 01</a></li>
+                        <li class="col3 keyline-bottom"><a class="col12 pad0 quiet keyline-left" href="#" data-id="d13_12_03">Dec 02 - Dec 08</a></li>
+                        <li class="col3 keyline-bottom"><a class="col12 pad0 quiet keyline-left" href="#" data-id="d13_12_10">Dec 09 - Dec 15</a></li>
+                        <li class="col3 keyline-bottom"><a class="col12 pad0 quiet keyline-left" href="#" data-id="d13_12_17">Dec 16 - Dec 22</a></li>
+                        <li class="col3 keyline-bottom"><a class="col12 pad0 quiet keyline-left" href="#" data-id="d13_12_24">Dec 23 - Dec 29</a></li>
+                        <li class="col3 keyline-bottom"><a class="col12 pad0 quiet keyline-left" href="#" data-id="d13_12_31">Dec 30 - Dec 31</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="pin-bottom fill-gray strongline-top">
+    <div class="micro center pad2x row0">this has been a project by adequate design studios - few, if any, rights reserved</div>
+</footer>
+
+<!-- Legend -->
+<div class="legend-container" style="display:none">
+    <div class="col12">
+        <h3 class="center">Conflict Density</h3>
+        <div class="quiet micro">Each grid cell counts conflict incidents as recorded by the GDELT event dataset from 1 Oct. 2013 - 31 Dec. 2013.</div>
+    </div>
+    <table class="fixed">
+        <thead>
+            <tr>
+                <th class="center">1 - 5</th>
+                <th class="center">6 - 25</th>
+                <th class="center">26 - 200</th>
+                <th class="center">200 - 1k</th>
+                <th class="center">1k+</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="background-color: #FFCC00;"></td>
+                <td style="background-color: #FFAA11;"></td>
+                <td style="background-color: #FF8822;"></td>
+                <td style="background-color: #FF6633;"></td>
+                <td style="background-color: #FF4444;"></td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="micro legend-source">
+        <div class="strong quiet">Source: <a class="desaturate" href="gdeltproject.org">GDELT</a></div>
+        <div class="strong quiet"><span style="visibility:hidden;">Source:</span> <a class="desaturate" href="openstreetmap.org">Map data &copy OpenStreetMap contributors</a></div>
+    </div>
+</div>
+
+
+<script src='map.js'></script>
+</body>
+</html>
