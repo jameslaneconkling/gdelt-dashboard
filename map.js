@@ -31,7 +31,6 @@ var mapLayers = {},
     ramp = ['transparent','#FFCC00','#FFAA11','#FF8822','#FF6633','#FF4444','#FF2255'],
     bins = [0,1,4,16,64,256,1024];
 
-
 // var grid = addGridLayer('syria')
 //     .on('ready', function(){
 //         grid.setStyle({
@@ -61,12 +60,12 @@ $('.arrow').on('click', function(e){
         $contentContainer = $('.content-container');
 
     if($this.hasClass('active')) {
-        removeGridLayers();
+        // removeGridLayers();
         $this.removeClass('active');
         $contentContainer.removeClass('active');
     } else {
         $this.addClass('active');
-        $contentContainer.addClass('active').find('.calendar a:first').trigger('click');
+        $contentContainer.addClass('active');//.find('.calendar a:first').trigger('click');
     }
 });
 
@@ -82,9 +81,10 @@ $('.calendar').on('click', 'a', function(e){
     // if($this.hasClass('active')) return
 
     // if map doesn't already have layer, add and recolor; otherwise, simply add
+    // probably not needed
     if( ! map.hasLayer(mapLayers[layer]) ){
         addGridLayer(layer).on('ready', function(){
-            reColor(mapLayers[layer], date, bins, ramp);
+            reColor(this, date, bins, ramp);
         });
     }else{
         reColor(mapLayers[layer], date, bins, ramp);
@@ -114,6 +114,8 @@ $('.calendar-switcher').on('click', 'a', function(e){
 
     map.setView([nav[0], nav[1]], nav[2]);
 });
+
+$('.calendar-switcher').children('a[data-id="syria"]').trigger('click');
 
 
 function reColor(grid,field,bins,ramp){
