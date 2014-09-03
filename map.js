@@ -12,14 +12,14 @@ var mapLegend = L.mapbox.legendControl({ position:'topright' }).addLegend(
     $('.legend-container').html());
 map.addControl(mapLegend);
 
-var grid = L.mapbox.featureLayer()
-        .loadURL('pntcnt.geojson')
-        .setFilter(function(cell){
-            return cell.properties['total'] > 0;
-        })
-        .addTo(map);
+// var grid = L.mapbox.featureLayer()
+//         .loadURL('syria.geojson')
+//         .setFilter(function(cell){
+//             return cell.properties['total'] > 0;
+//         })
+//         .addTo(map);
 
-// var grid = omnivore.topojson('pntcnt.topojson')
+// var grid = omnivore.topojson('syria.topojson')
 //             .setStyle({
 //                 weight: 0.5,
 //                 color: '#000',
@@ -27,28 +27,31 @@ var grid = L.mapbox.featureLayer()
 //             })
 //             .addTo(map);
 
-var ramp = ['transparent','#FFCC00','#FFAA11','#FF8822','#FF6633','#FF4444','#FF2255'];
-var bins = [0,1,4,16,64,256,1024];
+var mapLayers = {},
+    ramp = ['transparent','#FFCC00','#FFAA11','#FF8822','#FF6633','#FF4444','#FF2255'],
+    bins = [0,1,4,16,64,256,1024];
 
-grid.on('ready', function(){
-    grid.setStyle({
-        weight: 0.2,
-        color: '#444',
-        opacity:1,
-        fillColor: 'transparent'
-    });
-    grid.eachLayer(function(cell){
-        if(cell.feature.properties['total'] > 0){
-            var content = '<h2>Incidences of Conflict</h2><ul>' +
-                '<li>Week 1:' + cell.feature.properties.d13_10_01 + '</li>' +
-                '<li>Week 2:' + cell.feature.properties.d13_10_08 + '</li>' +
-                '<li>Week 3:' + cell.feature.properties.d13_10_15 + '</li>' +
-                '<li><strong>Total: ' + cell.feature.properties.total + '</strong></li>' +
-                '</ul>';
-            cell.bindPopup(content);
-        }
-    });
-});
+
+// var grid = addGridLayer('syria')
+//     .on('ready', function(){
+//         grid.setStyle({
+//             weight: 0.2,
+//             color: '#444',
+//             opacity:1,
+//             fillColor: 'transparent'
+//         });
+//         grid.eachLayer(function(cell){
+//             if(cell.feature.properties['total'] > 0){
+//                 var content = '<h2>Incidences of Conflict</h2><ul>' +
+//                     '<li>Week 1:' + cell.feature.properties.d13_10_01 + '</li>' +
+//                     '<li>Week 2:' + cell.feature.properties.d13_10_08 + '</li>' +
+//                     '<li>Week 3:' + cell.feature.properties.d13_10_15 + '</li>' +
+//                     '<li><strong>Total: ' + cell.feature.properties.total + '</strong></li>' +
+//                     '</ul>';
+//                 cell.bindPopup(content);
+//             }
+//         });
+//     });
 
 $('.arrow').on('click', function(e){
     e.preventDefault();
@@ -58,6 +61,7 @@ $('.arrow').on('click', function(e){
         $contentContainer = $('.content-container');
 
     if($this.hasClass('active')) {
+        removeGridLayers();
         $this.removeClass('active');
         $contentContainer.removeClass('active');
     } else {
@@ -71,9 +75,21 @@ $('.calendar').on('click', 'a', function(e){
     e.stopPropagation();
 
     var $this = $(this),
-        field = $this.data('id');
+        layer = $this.parents('.calendar').siblings('.calendar-switcher').children('a.active').data('id');
+        date = $this.data('date');
 
-    reColor(grid, field, bins, ramp);
+    // short circuit if button already active
+    // if($this.hasClass('active')) return
+
+    // if map doesn't already have layer, add and recolor; otherwise, simply add
+    if( ! map.hasLayer(mapLayers[layer]) ){
+        addGridLayer(layer).on('ready', function(){
+            reColor(mapLayers[layer], date, bins, ramp);
+        });
+    }else{
+        reColor(mapLayers[layer], date, bins, ramp);
+    }
+    
 
     $('.calendar a.active').removeClass('active');
     $this.addClass('active');
@@ -84,12 +100,17 @@ $('.calendar-switcher').on('click', 'a', function(e){
     e.stopPropagation();
 
     var $this = $(this),
-        newIndex = $this.data('index'),
+        layerId = $this.data('id'),
         nav = $this.data('nav');
 
-    var oldIndex = $this.addClass('active').siblings('.active').removeClass('active').data('index');
+    //short circuit if button already active
+    // if($this.hasClass('active')) return
 
-    $this.parent().next().removeClass('active' + oldIndex).addClass('active' + newIndex).find('ul:nth-child(' + newIndex + ') li:first a').trigger('click');
+    removeGridLayers()
+
+    $this.addClass('active').siblings('.active').removeClass('active');
+
+    $this.parent('.calendar-switcher').siblings('.calendar').find('li:first a').trigger('click');
 
     map.setView([nav[0], nav[1]], nav[2]);
 });
@@ -118,5 +139,32 @@ function reColor(grid,field,bins,ramp){
         }
 
     });
+}
+
+function addGridLayer(id,filter){
+    if(id in mapLayers){
+        mapLayers[id].addTo(map);
+    }else{
+        mapLayers[id] = L.mapbox.featureLayer()
+            .loadURL(id + '.geojson')
+            .setFilter(filter || function(cell){ return cell.properties['total'] > 0; })
+            .on('ready', function(){
+                this.setStyle({
+                    weight: 0.5,
+                    color: '#000',
+                    opacity:0.1
+                })
+            })
+            .addTo(map);
+    }
+    return mapLayers[id];
+}
+
+function removeGridLayers(){
+    for(mapLayer in mapLayers){
+        if(map.hasLayer(mapLayers[mapLayer])){
+            map.removeLayer(mapLayers[mapLayer]);
+        }
+    }
 }
 
