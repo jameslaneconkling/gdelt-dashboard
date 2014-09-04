@@ -1,14 +1,14 @@
 ;(function(context) {
 
   var gdelt = {
-    mapLayers: {},
-    ramp: ['transparent','#FFCC00','#FFAA11','#FF8822','#FF6633','#FF4444','#FF2255'],
-    bins: [0,1,4,16,64,256,1024],
     global: function(){
+      this.mapLayers={},
+      this.ramp=['transparent','#FFCC00','#FFAA11','#FF8822','#FF6633','#FF4444','#FF2255'],
+      this.bins=[0,1,4,16,64,256,1024],
       this.init_map();
       $('.arrow').on('click', this.arrowSlide);
-      $('.calendar').on('click', 'a', this.calendarRedraw);
-      $('.calendar-switcher').on('click', 'a', this.switchCalendar);
+      $('.calendar').on('click', 'a', this.changeDate);
+      $('.calendar-switcher').on('click', 'a', this.changeMap);
       // trigger initial view
       $('.calendar-switcher').children('a[data-id="syria"]').trigger('click');
     },
@@ -45,7 +45,7 @@
       }
     },
 
-    switchCalendar: function(e){
+    changeMap: function(e){
       e.preventDefault();
       e.stopPropagation();
 
@@ -55,7 +55,6 @@
 
       //short circuit if button already active
       // if($this.hasClass('active')) return
-
       gdelt.removeGridLayers()
 
       $this.addClass('active').siblings('.active').removeClass('active');
@@ -65,7 +64,7 @@
       gdelt.map.setView([nav[0], nav[1]], nav[2]);
     },
 
-    calendarRedraw: function(e){
+    changeDate: function(e){
       e.preventDefault();
       e.stopPropagation();
 
