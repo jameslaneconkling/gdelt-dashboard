@@ -1,6 +1,7 @@
 Mapping Syria Conflict Density
 ==============
-[see the map on gh pages](http://jameslaneconkling.github.io/gdelt-dashboard/)
+
+![](https://cloud.githubusercontent.com/assets/4389360/10033282/6afd7466-613d-11e5-9e2e-c9f493043bf9.png)
 
 All conflict data is derived from the [GDELT Project](http://gdeltproject.org/).
 
